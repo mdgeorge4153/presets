@@ -2,7 +2,6 @@
 
 import sys
 import re
-import toml
 
 
 def milk2toml():
@@ -16,7 +15,8 @@ def milk2toml():
 
         if header:
             entries[header]=None
-        elif len(number) > 0:
+        elif len(number) > 0 and field.find("code") == -1:
+            # note: find('code') above is to handle shapecode_r2
             entries.setdefault(field, []).append(content)
         else:
             entries[field] = content
@@ -32,24 +32,5 @@ def milk2toml():
         else:
             print(f"{k}={v}")
 
-def dumpmilk(d):
-    for k,v in d.items():
-        if isinstance(v,dict):
-            print(f"[{k}]")
-            dumpmilk(v)
-        elif isinstance(v, str):
-            for i,l in enumerate(v.split('\n')[0:-1]):
-                print(f"{k}{i+1}={l.strip()}")
-        elif isinstance(v,float):
-            print(f"{k}={v:.6f}")
-        else:
-            print(f"{k}={v}")
-
-def toml2milk():
-    dumpmilk(toml.load(sys.stdin))
-
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == '--decode':
-        toml2milk()
-    else:
-        milk2toml()
+    milk2toml()

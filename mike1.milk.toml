@@ -218,9 +218,9 @@ warp_='''
     `
     `float2 adj = texsize.zw;
     `// //float2 adj = 0;
-    `// 
+    `//
     `float2 uvn = uv + .005*noiseVal + float2(-1.1,-1.5)*adj;
-    `// 
+    `//
     `// sample previous frame
     `    ret = tex2D( sampler_main, uv ).xyz;
     `// darken (decay) over time
