@@ -2,6 +2,8 @@
 MILKS=$(patsubst %.milk.toml,generated/%.milk, $(wildcard *.milk.toml) $(wildcard saved/*.milk.toml))
 
 all: $(MILKS)
+clean: 
+	git clean -fdX
 
 generated/%.milk: %.milk.toml converters/milk2toml.py
 	mkdir -p $$(dirname $@)
