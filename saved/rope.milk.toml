@@ -13,16 +13,16 @@ zoom=1.0001
 wave_a=0
 
 # custom wave
-wavecode_2_enabled=1
-wavecode_2_samples=512
-wavecode_2_bSpectrum=1
-wavecode_2_bUseDots=0
-wavecode_2_bDrawThick=1
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_bSpectrum=1
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
 
-wave_2_per_frame='''
+wave_1_per_frame='''
 '''
 
-wave_2_per_point='''
+wave_1_per_point='''
     x=sample;
     y=.5 + .25*sin(time + sample*10)*log(1+bass_att);
     a=1
