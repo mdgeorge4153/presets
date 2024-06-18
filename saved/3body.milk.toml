@@ -1,0 +1,202 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fGammaAdj=1.980
+warp=0
+zoom=1
+
+# disable built-in wave
+wave_a=0
+
+shapecode_0_enabled=1
+shapecode_0_sides=3
+shapecode_0_rad=0.1
+
+shapecode_0_r=1
+shapecode_0_g=0
+shapecode_0_b=1
+shapecode_0_a=1
+
+shapecode_0_r2=1
+shapecode_0_g2=0
+shapecode_0_b2=1
+shapecode_0_a2=1
+
+shapecode_0_border_a=0
+
+shape_0_per_frame='''
+    x = q1;
+    y = q2;
+    ang = -time;
+    a = 0.1 + above(bass, 1.3);
+    a2 = a;
+'''
+
+shapecode_1_enabled=1
+shapecode_1_sides=3
+shapecode_1_rad=0.1
+
+shapecode_1_r=1
+shapecode_1_g=0
+shapecode_1_b=1
+shapecode_1_a=1
+
+shapecode_1_r2=1
+shapecode_1_g2=0
+shapecode_1_b2=1
+shapecode_1_a2=1
+
+shapecode_1_border_a=0
+
+shape_1_per_frame='''
+    x = q3;
+    y = q4;
+    ang = time;
+    a = 0.1 + above(mid, 1.3);
+    a2 = a;
+'''
+
+shapecode_2_enabled=1
+shapecode_2_sides=3
+shapecode_2_rad=0.1
+
+shapecode_2_r=1
+shapecode_2_g=0
+shapecode_2_b=1
+shapecode_2_a=1
+
+shapecode_2_r2=1
+shapecode_2_g2=0
+shapecode_2_b2=1
+shapecode_2_a2=1
+
+shapecode_2_border_a=0
+
+shape_2_per_frame='''
+    x = q5;
+    y = q6;
+    ang = 0.4*time;
+    a = 0.1 + above(treb, 1.3);
+    a2 = a;
+'''
+
+per_frame_init_='''
+    x0 = .25 + rand(10)/20;
+    y0 = .25 + rand(10)/20;
+    vx0 = .25 - rand(10)/20;
+    vy0 = .25 - rand(10)/20;
+
+    x1 = .25 + rand(10)/20;
+    y1 = .25 + rand(10)/20;
+    vx1 = .25 - rand(10)/20;
+    vy1 = .25 - rand(10)/20;
+
+    # average of positions should be at (.5, .5)
+    x2 = 1.5 - x0 - x1;
+    y2 = 1.5 - y0 - y1;
+
+    # average of velocities should be 0
+    vx2 = -vx0 - vx1;
+    vy2 = -vy0 - vy1;
+
+    last_time = time;
+'''
+
+# F = GMm/r
+
+per_frame_='''
+    dt = time - last_time;
+    last_time = time;
+
+    x0 = x0 + vx0*dt;
+    y0 = y0 + vy0*dt;
+
+    x1 = x1 + vx1*dt;
+    y1 = y1 + vy1*dt;
+
+    x2 = x2 + vx2*dt;
+    y2 = y2 + vy2*dt;
+
+    vx0 = vx0 + .2*(x1 - x0)*dt + .2*(x2 - x0)*dt + .1*(.5 - x0)*dt;
+    vy0 = vy0 + .2*(y1 - y0)*dt + .2*(y2 - y0)*dt + .1*(.5 - y0)*dt;
+
+    vx1 = vx1 + .2*(x0 - x1)*dt + .2*(x2 - x1)*dt + .1*(.5 - x1)*dt;
+    vy1 = vy1 + .2*(y0 - y1)*dt + .2*(y2 - y1)*dt + .1*(.5 - y1)*dt;
+
+    vx2 = vx2 + .2*(x0 - x2)*dt + .2*(x1 - x2)*dt + .1*(.5 - x2)*dt;
+    vy2 = vy2 + .2*(y0 - y2)*dt + .2*(y1 - y2)*dt + .1*(.5 - y2)*dt;
+
+    q1 = x0;
+    q2 = y0;
+
+    q3 = x1;
+    q4 = y1;
+
+    q5 = x2;
+    q6 = y2;
+
+    q8 = dt;
+'''
+
+warp_='''
+    shader_body {
+        float dt = q8;
+
+        // ripples are modeled as a field of springs, one for each pixel.
+        //
+        // 2x-1 (x=red)   is height   (in [-1...1])
+        // 2y-1 (y=green) is velocity (in [-1...1])
+
+        float3 old  = tex2D(sampler_main, uv);
+
+        float x = 2*old.x - 1;
+        float v = 2*old.y - 1;
+
+        // we want to move x closer to 0 and closer to nearby springs. To find
+        // "nearby" springs, we sample a few points on a circle around uv:
+
+        float radius = 0.01;
+
+        float3 n1 = 2*tex2D(sampler_main, uv + radius*float2( 0, 1)).x - 1;
+        float3 n2 = 2*tex2D(sampler_main, uv + radius*float2( 0,-1)).x - 1;
+        float3 n3 = 2*tex2D(sampler_main, uv + radius*float2( 1, 0)).x - 1;
+        float3 n4 = 2*tex2D(sampler_main, uv + radius*float2(-1, 0)).x - 1;
+
+        float coord = sqrt(2)/2*radius;
+        float3 n5 = 2*tex2D(sampler_main, uv + float2( coord, coord)).x - 1;
+        float3 n6 = 2*tex2D(sampler_main, uv + float2( coord,-coord)).x - 1;
+        float3 n7 = 2*tex2D(sampler_main, uv + float2(-coord, coord)).x - 1;
+        float3 n8 = 2*tex2D(sampler_main, uv + float2(-coord,-coord)).x - 1;
+
+        // Now we can update the velocity. We should pull towards x-values of
+        // the neighbors:
+
+        v += .1*(n1.x + n2.x + n3.x + n4.x + n5.x + n6.x + n7.x + n8.x - 8*x);
+
+        // We update the position:
+
+        x += 2*v*dt;
+
+        // We dampen it towards 0:
+
+        //x *= 0.98;
+
+        // finally we reencode the values:
+
+        ret.x = .5*x + .5;
+        ret.y = .5*v + .5;
+    }
+'''
+comp_='''
+    shader_body {
+        ret = 0;
+        float3 output = tex2D(sampler_main, uv);
+        ret.z = .5*output.x + .5 + 100*output.z;
+        ret.y = .5*ret.z;
+    }
+'''
+
