@@ -1,0 +1,40 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fDecay=1.500000
+fShader=0.000000
+warp=0
+zoom=1.0001
+
+# disable built-in wave
+wave_a=0
+
+# custom wave
+wavecode_2_enabled=1
+wavecode_2_samples=512
+wavecode_2_bSpectrum=1
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=1
+
+wave_2_per_frame='''
+'''
+
+wave_2_per_point='''
+    x=sample;
+    y=.5 + .25*sin(time + sample*10)*log(1+bass_att);
+    a=1
+    r=bass_att;
+    g=mid_att;
+    b=treb_att;
+'''
+
+comp_='''
+    `//shader_body
+    `//{
+    `//   ret = tex2D(sample_main, uv) + .01;
+    `//   ret = float3(1,1,1);
+    `//}
+'''
