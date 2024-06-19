@@ -12,18 +12,6 @@ zoom=1
 # disable built-in wave
 wave_a=0
 
-shapecode_0_enabled=1
-shapecode_0_sides=3
-shapecode_0_rad=0.1
-
-shapecode_0_r=1
-
-shape_0_per_frame='''
-    x = q1;
-    y = q2;
-    ang = -time;
-'''
-
 per_frame_init_='''
     x0 = .25 + rand(10)/20;
     y0 = .25 + rand(10)/20;
@@ -35,13 +23,23 @@ per_frame_init_='''
     vx1 = .25 - rand(10)/20;
     vy1 = .25 - rand(10)/20;
 
+    x2 = .25 + rand(10)/20;
+    y2 = .25 + rand(10)/20;
+    vx2 = .25 - rand(10)/20;
+    vy2 = .25 - rand(10)/20;
+
+    x3 = .25 + rand(10)/20;
+    y3 = .25 + rand(10)/20;
+    vx3 = .25 - rand(10)/20;
+    vy3 = .25 - rand(10)/20;
+
     # average of positions should be at (.5, .5)
-    x2 = 1.5 - x0 - x1;
-    y2 = 1.5 - y0 - y1;
+    x4 = 2.5 - x0 - x1 - x2 - x3;
+    y4 = 2.5 - y0 - y1 - y2 - y3;
 
     # average of velocities should be 0
-    vx2 = -vx0 - vx1;
-    vy2 = -vy0 - vy1;
+    vx4 = -vx0 - vx1 - vx2 - vx3;
+    vy4 = -vy0 - vy1 - vx2 - vx3;
 
     last_time = time;
 '''
@@ -61,14 +59,29 @@ per_frame_='''
     x2 = x2 + vx2*dt;
     y2 = y2 + vy2*dt;
 
-    vx0 = vx0 + .2*(x1 - x0)*dt + .2*(x2 - x0)*dt + .1*(.5 - x0)*dt;
-    vy0 = vy0 + .2*(y1 - y0)*dt + .2*(y2 - y0)*dt + .1*(.5 - y0)*dt;
+    x3 = x3 + vx3*dt;
+    y3 = y3 + vy3*dt;
 
-    vx1 = vx1 + .2*(x0 - x1)*dt + .2*(x2 - x1)*dt + .1*(.5 - x1)*dt;
-    vy1 = vy1 + .2*(y0 - y1)*dt + .2*(y2 - y1)*dt + .1*(.5 - y1)*dt;
+    x4 = x4 + vx4*dt;
+    y4 = y4 + vy4*dt;
 
-    vx2 = vx2 + .2*(x0 - x2)*dt + .2*(x1 - x2)*dt + .1*(.5 - x2)*dt;
-    vy2 = vy2 + .2*(y0 - y2)*dt + .2*(y1 - y2)*dt + .1*(.5 - y2)*dt;
+    cx = (x0 + x1 + x2 + x3 + x4)/5;
+    cy = (y0 + y1 + y2 + y3 + y4)/5;
+
+    vx0 = vx0 + (cx - x0)*dt + .1*(.5 - x0)*dt;
+    vy0 = vy0 + (cy - y0)*dt + .1*(.5 - y0)*dt;
+
+    vx1 = vx1 + (cx - x1)*dt + .1*(.5 - x1)*dt;
+    vy1 = vy1 + (cy - y1)*dt + .1*(.5 - y1)*dt;
+
+    vx2 = vx2 + (cx - x2)*dt + .1*(.5 - x2)*dt;
+    vy2 = vy2 + (cy - y2)*dt + .1*(.5 - y2)*dt;
+
+    vx3 = vx3 + (cx - x3)*dt + .1*(.5 - x3)*dt;
+    vy3 = vy3 + (cy - y3)*dt + .1*(.5 - y3)*dt;
+
+    vx4 = vx4 + (cx - x4)*dt + .1*(.5 - x4)*dt;
+    vy4 = vy4 + (cy - y4)*dt + .1*(.5 - y4)*dt;
 
     q1 = x0;
     q2 = y0;
@@ -79,7 +92,11 @@ per_frame_='''
     q5 = x2;
     q6 = y2;
 
-    q8 = dt;
+    q7 = x3;
+    q8 = y3;
+
+    q9 = x4;
+    q10 = y4;
 '''
 
 warp_='''
@@ -91,13 +108,15 @@ comp_='''
     shader_body {
         // ret = tex2D(sampler_main, uv);
 
-        float cutoff = 100;
+        float cutoff = 150;
 
         float2 d1 = uv - float2(q1,q2);
         float2 d2 = uv - float2(q3,q4);
         float2 d3 = uv - float2(q5,q6);
+        float2 d4 = uv - float2(q7,q8);
+        float2 d5 = uv - float2(q9,q10);
 
-        float pot = 1/dot(d1,d1) + 1/dot(d2,d2) + 1/dot(d3,d3);
+        float pot = 1/dot(d1,d1) + 1/dot(d2,d2) + 1/dot(d3,d3) + 1/dot(d4,d4) + 1/dot(d5,d5);
         if (pot > cutoff) {
             ret.z = 1/sqrt(pot - cutoff);
         }
