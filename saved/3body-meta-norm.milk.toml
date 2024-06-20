@@ -1,0 +1,138 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fGammaAdj=1.980
+warp=0
+zoom=1
+
+# disable built-in wave
+wave_a=0
+
+shapecode_0_enabled=1
+shapecode_0_sides=3
+shapecode_0_rad=0.1
+
+shapecode_0_r=1
+
+shape_0_per_frame='''
+    x = q1;
+    y = q2;
+    ang = -time;
+'''
+
+per_frame_init_='''
+    x0 = .25 + rand(10)/20;
+    y0 = .25 + rand(10)/20;
+    vx0 = .25 - rand(10)/20;
+    vy0 = .25 - rand(10)/20;
+
+    x1 = .25 + rand(10)/20;
+    y1 = .25 + rand(10)/20;
+    vx1 = .25 - rand(10)/20;
+    vy1 = .25 - rand(10)/20;
+
+    # average of positions should be at (.5, .5)
+    x2 = 1.5 - x0 - x1;
+    y2 = 1.5 - y0 - y1;
+
+    # average of velocities should be 0
+    vx2 = -vx0 - vx1;
+    vy2 = -vy0 - vy1;
+
+    last_time = time;
+'''
+
+# F = GMm/r
+
+per_frame_='''
+    dt = (time - last_time)*.5;
+    last_time = time;
+
+    x0 = x0 + vx0*dt;
+    y0 = y0 + vy0*dt;
+
+    x1 = x1 + vx1*dt;
+    y1 = y1 + vy1*dt;
+
+    x2 = x2 + vx2*dt;
+    y2 = y2 + vy2*dt;
+
+    vx0 = vx0 + .2*(x1 - x0)*dt + .2*(x2 - x0)*dt + .1*(.5 - x0)*dt;
+    vy0 = vy0 + .2*(y1 - y0)*dt + .2*(y2 - y0)*dt + .1*(.5 - y0)*dt;
+
+    vx1 = vx1 + .2*(x0 - x1)*dt + .2*(x2 - x1)*dt + .1*(.5 - x1)*dt;
+    vy1 = vy1 + .2*(y0 - y1)*dt + .2*(y2 - y1)*dt + .1*(.5 - y1)*dt;
+
+    vx2 = vx2 + .2*(x0 - x2)*dt + .2*(x1 - x2)*dt + .1*(.5 - x2)*dt;
+    vy2 = vy2 + .2*(y0 - y2)*dt + .2*(y1 - y2)*dt + .1*(.5 - y2)*dt;
+
+    q1 = x0;
+    q2 = y0;
+
+    q3 = x1;
+    q4 = y1;
+
+    q5 = x2;
+    q6 = y2;
+
+    q8 = dt;
+'''
+
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_main, uv);
+    }
+'''
+comp_='''
+    shader_body {
+        float cutoff = 100;
+
+        float2 d1 = uv - float2(q1,q2);
+        float2 d2 = uv - float2(q3,q4);
+        float2 d3 = uv - float2(q5,q6);
+
+        // dot(d1,d1) is in 0...3
+        // pot1 is in .33 ... 100
+        // at distance 0, pot1 is 100
+        // at distance .1, pot1 is 50
+        // at distance .05, pot1 is 1/(.0125) = 80
+        // at distance .11, pot1 is 1/(.0221) = 45
+        // at distance .2, pot is 1/.05 = 20;
+        // at distance 1, pot is 1/1.01 ~= 1;
+        float pot1 = 1/(dot(d1,d1) + .01);
+        float pot2 = 1/(dot(d2,d2) + .01);
+        float pot3 = 1/(dot(d3,d3) + .01);
+
+        //          |stacked | center | half  | edge  |      | double | far away
+        // ------------------| -------------------------------------------------
+        // distance:| 0      | 0      | .05   | .1    | .11  | .2     | 1
+        // pot:     | 300    | 100    | 80    | 50    | 45   | 20     | 1
+        // z:       | > .1   | .1     | √2/2  |  0    | imaginary
+        // 
+
+        float pot = pot1 + pot2 + pot3;
+
+        // pot is between 0 and 300
+        // when distance is 0 from one and far from the others, pot is 100, z should be .1
+        // on boundary, pot is 50, z should be 0
+        if (pot > 50) {
+            float z = (sqrt(pot - 50))/70;
+
+            float wt1 = pot1/pot;
+            float wt2 = pot2/pot;
+            float wt3 = pot3/pot;
+
+            float3 d1z = normalize(float3(d1.x, d1.y, z));
+            float3 d2z = normalize(float3(d2.x, d2.y, z));
+            float3 d3z = normalize(float3(d3.x, d3.y, z));
+            float3 n = normalize(d1z*wt1 + d2z*wt2 + d3z*wt3);
+
+            ret = n;
+        }
+    }
+'''
+
