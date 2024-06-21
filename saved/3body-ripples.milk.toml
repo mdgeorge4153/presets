@@ -102,15 +102,12 @@ per_frame_init_='''
     # average of velocities should be 0
     vx2 = -vx0 - vx1;
     vy2 = -vy0 - vy1;
-
-    last_time = time;
 '''
 
 # F = GMm/r
 
 per_frame_='''
-    dt = time - last_time;
-    last_time = time;
+    dt = 1/fps;
 
     x0 = x0 + vx0*dt;
     y0 = y0 + vy0*dt;
