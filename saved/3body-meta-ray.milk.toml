@@ -7,11 +7,11 @@ PSVERSION_COMP=2
 fDecay=1.0
 fShader=0.0
 fGammaAdj=1.980
-warp=0.01
+warp=0
 zoom=1.001
 
-wave_x=0.5
-wave_y=0.5
+wave_x = 0.5
+wave_y = 0.5
 
 per_frame_init_='''
     x0 = .25 + rand(10)/20;
@@ -72,6 +72,12 @@ per_frame_='''
     wave_b = rand(100)/100;
 '''
 
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_main, uv)*.999;
+    }
+'''
+
 comp_='''
     shader_body {
         float cutoff = 100;
@@ -104,6 +110,8 @@ comp_='''
         // pot is between 0 and 300
         // when distance is 0 from one and far from the others, pot is 100, z should be .1
         // on boundary, pot is 50, z should be 0
+
+        float2 texloc = uv;
         if (pot > 50) {
             float z = (sqrt(pot - 50))/70;
 
@@ -116,12 +124,9 @@ comp_='''
             float3 d3z = normalize(float3(d3.x, d3.y, z));
             float3 n = normalize(d1z*wt1 + d2z*wt2 + d3z*wt3);
 
-            float2 texloc = uv + .05*n.xy/n.z;
-            ret = tex2D(sampler_main, texloc);
+            texloc = uv + .05*n.xy/n.z;
         }
-        else {
-            ret = tex2D(sampler_main, uv);
-        }
+        ret = .5*tex2D(sampler_fw_main, texloc)+.5*tex2D(sampler_rand00, texloc);
 
     }
 '''
