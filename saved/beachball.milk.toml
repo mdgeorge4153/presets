@@ -64,8 +64,8 @@ wave_1_per_frame='''
 
 wave_1_per_point='''
     ang = rand(100);
-    bx = ball_x + .010*sin(ang);
-    by = ball_y + .010*cos(ang);
+    bx = ball_x + .020*sin(ang)*aspectx;
+    by = ball_y + .020*cos(ang)*aspecty;
 
     // draw wave
     wx = sample/.9;
