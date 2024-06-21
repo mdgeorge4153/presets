@@ -5,7 +5,8 @@ TOMLS=$(patsubst %.milk,%.milk.toml, $(wildcard examples/*.milk))
 all: $(MILKS) $(TOMLS)
 
 clean: 
-	git clean -fdX
+	rm -f examples/*.milk.toml
+	rm -f generated/*
 
 generated/%.milk: %.milk.toml converters/milk2toml.py
 	mkdir -p $$(dirname $@)
