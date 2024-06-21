@@ -18,6 +18,7 @@ wavecode_1_samples=500
 wavecode_1_bSpectrum=0
 wavecode_1_bUseDots=1
 wavecode_1_bDrawThick=1
+wavecode_1_smoothing=0.5
 
 wave_1_init='''
     ball_x = .5;
@@ -76,12 +77,12 @@ wave_1_per_point='''
     norm_x = wy - last_y;
     norm_y = last_x - wx;
     len_norm = sqrt(norm_x*norm_x + norm_y*norm_y);
-    norm_x = norm_x/len_norm;
+    norm_x = -norm_x/len_norm;
     norm_y = norm_y/len_norm;
 
     below = has_ball*below(ball_y, wy);
     ball_y  = (1-below)*ball_y  + below*(wy + (wy - ball_y);
-    ball_vy = (1-below)*ball_vy + below*(wy*2);
+    ball_vy = (1-below)*ball_vy + below*(wy*5);
     ball_vx = (1-below)*ball_vx + below*(.5*norm_x);
 
     // drawing
@@ -96,15 +97,16 @@ wave_1_per_point='''
     last_y = wy;
 '''
 
-wavecode_2_enabled=0
+wavecode_2_enabled=1
 wavecode_2_samples=500
 wavecode_2_bSpectrum=0
 wavecode_2_bUseDots=0
 wavecode_2_bDrawThick=1
+wavecode_2_smoothing=0.5
 
 wave_2_per_point='''
-    x=(sample/.9);
-    y=below(sample, .9)*(value1*.1 + .2);
+    x=sample/.9;
+    y=value1*.15 + .2;
     r=below(x, ball_x-.01) + above(x, ball_x+.01);
 '''
 
