@@ -42,7 +42,7 @@ wave_1_per_frame='''
 
     ball_x = new_x;
 
-    ball_vy = ball_vy - .05;
+    ball_vy = .99*(ball_vy - .05);
     new_y = ball_y + ball_vy*dt;
 
     below = below(new_y, 0);
@@ -63,8 +63,8 @@ wave_1_per_point='''
     ang = rand(100);
     is_ball = above(sample, .9);
 
-    x=(1-is_ball)*(sample/.9)      + (is_ball)*(ball_x + .01*sin(ang));
-    y=(1-is_ball)*(value1*.1 + .4) + (is_ball)*(ball_y + .01*cos(ang));
+    x=(1-is_ball)*(sample/.9)      + (is_ball)*(ball_x + .010*sin(ang));
+    y=(1-is_ball)*(value1*.15 + .2) + (is_ball)*(ball_y + .010*cos(ang));
 
     r=below(x, ball_x-.01) + above(x, ball_x+.01);
 
