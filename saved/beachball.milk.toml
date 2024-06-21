@@ -1,0 +1,98 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fGammaAdj=1.980
+warp=0
+zoom=1
+
+# disable built-in wave
+wave_a=0
+
+# custom wave
+wavecode_1_enabled=1
+wavecode_1_samples=500
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=1
+wavecode_1_bDrawThick=1
+
+wave_1_init='''
+    ball_x = .5;
+    ball_y = .8;
+
+    ball_vx = .15;
+    ball_vy = 0;
+'''
+
+wave_1_per_frame='''
+    dt = 1/fps;
+
+    new_x = ball_x + ball_vx*dt;
+
+    below = below(new_x, 0);
+    new_x = below*(-new_x) + (1-below)*new_x;
+    ball_vx = below*(-ball_vx) + (1-below)*ball_vx;
+
+    above = above(new_x, 1);
+    new_x = above*(2 - new_x) + (1-above)*new_x;
+    ball_vx = above*(-ball_vx) + (1-above)*ball_vx;
+
+    ball_x = new_x;
+
+    ball_vy = ball_vy - .05;
+    new_y = ball_y + ball_vy*dt;
+
+    below = below(new_y, 0);
+    new_y = below*(-new_y) + (1-below)*new_y;
+    ball_vy = below*(-ball_vy) + (1-below)*ball_vy;
+
+    above = above(new_y, 1);
+    new_y = above*(2 - new_y) + (1-above)*new_y;
+    ball_vy = above*(-.1*ball_vy) + (1-above)*ball_vy;
+
+    ball_y = new_y;
+
+    last_x=0;
+    last_y=0;
+'''
+
+wave_1_per_point='''
+    ang = rand(100);
+    is_ball = above(sample, .9);
+
+    x=(1-is_ball)*(sample/.9)      + (is_ball)*(ball_x + .01*sin(ang));
+    y=(1-is_ball)*(value1*.1 + .4) + (is_ball)*(ball_y + .01*cos(ang));
+
+    r=below(x, ball_x-.01) + above(x, ball_x+.01);
+
+    has_ball = below(last_x, ball_x)*(1-below(x, ball_x))*(1-is_ball);
+
+    below = has_ball*below(ball_y, y);
+    ball_y  = below*(y + .1*(y-ball_y))  + (1-below)*ball_y;
+    ball_vy = below*(-ball_vy) + (1-below)*ball_vy;
+
+    last_x = x;
+    last_y = y;
+'''
+
+wavecode_2_enabled=0
+wavecode_2_samples=500
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=1
+
+wave_2_per_point='''
+    x=(sample/.9);
+    y=below(sample, .9)*(value1*.1 + .2);
+    r=below(x, ball_x-.01) + above(x, ball_x+.01);
+'''
+
+
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_main, uv)*0.8;
+    }
+'''
