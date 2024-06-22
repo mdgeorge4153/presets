@@ -1,0 +1,65 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fDecay=1.0
+fGammaAdj=1.980
+warp=0
+zoom=1.00
+
+# disable built-in wave
+wave_a=0
+
+wavecode_1_enabled=1
+wavecode_1_samples=2
+wavecode_1_bDrawThick=1
+wavecode_1_alpha=1
+
+wave_1_per_point='''
+    x=0;
+    y=sample;
+    r=bass_att;
+    g=mid_att;
+    b=treb_att;
+'''
+
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_fc_main, uv-float2(.001,0));
+        //float2 dr = float2(1-0.50, 1-0.750) - uv;
+        //float2 dg = float2(1-0.28, 1-0.375) - uv;
+        //float2 db = float2(1-0.72, 1-0.375) - uv;
+
+        //ret = 0;
+        //ret.x = tex2D(sampler_main, uv_orig/2+0.001*normalize(dr)).x;
+        //ret.y = tex2D(sampler_main, uv_orig/2+0.001*normalize(dg)).y;
+        //ret.z = tex2D(sampler_main, uv_orig/2+0.001*normalize(db)).z;
+
+        //if (length(dr) < 0.01) { ret.x = .5+.5*sin(time); }
+        //if (length(dg) < 0.01) { ret.y = .5+.5*sin(time*0.9); }
+        //if (length(db) < 0.01) { ret.z = .5+.5*sin(time*1.1); }
+
+        //ret = dr;
+    }
+'''
+comp_='''
+    shader_body {
+        float3 d = float3(
+            length(float2(0.5, 1-0.25)*aspect - uv*aspect)*2,
+            length(float2(0.5, 1-0.50)*aspect - uv*aspect)*2,
+            length(float2(0.5, 1-0.75)*aspect - uv*aspect)*2
+        );
+
+        float3 rgb = float3(
+            tex2D(sampler_fc_main, float2(d.x,.5)).x,
+            tex2D(sampler_fc_main, float2(d.y,.5)).y,
+            tex2D(sampler_fc_main, float2(d.z,.5)).z
+        );
+
+        ret = length(rgb/d*0.1)/3;
+    }
+'''
+
