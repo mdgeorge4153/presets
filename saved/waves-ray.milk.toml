@@ -1,0 +1,64 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fDecay=1.0
+fGammaAdj=1.980
+warp=0
+zoom=1.00
+
+# disable built-in wave
+wave_a=0
+
+wavecode_1_enabled=1
+wavecode_1_samples=2
+wavecode_1_bDrawThick=1
+wavecode_1_alpha=1
+
+wave_1_per_frame='''
+    r = 0.5*bass_att;
+    g = 0.5*mid_att;
+    b = 0.5*treb_att;
+'''
+
+wave_1_per_point='''
+    x=0;
+    y=sample;
+'''
+
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_fc_main, uv-float2(.001,0));
+    }
+'''
+comp_='''
+    shader_body {
+        float2 d_r = 0.5*(float2(0.5, 0.8)*aspect - uv*aspect);
+        float2 d_g = 0.5*(float2(0.5, 0.5)*aspect - uv*aspect);
+        float2 d_b = 0.5*(float2(0.5, 0.2)*aspect - uv*aspect);
+
+        float dist_r = length(d_r);
+        float dist_g = length(d_g);
+        float dist_b = length(d_b);
+
+        float delta_r = (tex2D(sampler_fc_main, dist_r).x - tex2D(sampler_fc_main, dist_r-0.001).x)/(dist_r+.001)*0.1;
+        float delta_g = (tex2D(sampler_fc_main, dist_g).y - tex2D(sampler_fc_main, dist_g-0.001).y)/(dist_g+.001)*0.1;
+        float delta_b = (tex2D(sampler_fc_main, dist_b).z - tex2D(sampler_fc_main, dist_b-0.001).z)/(dist_b+.001)*0.1;
+
+        float2 norm_r = normalize(d_r);
+        float2 norm_g = normalize(d_g);
+        float2 norm_b = normalize(d_b);
+        float3 norm = normalize(float3(
+            norm_r.x*delta_r + norm_g.x*delta_g + norm_b.x*delta_b,
+            norm_r.y*delta_r + norm_g.y*delta_g + norm_b.y*delta_b,
+            .5
+        ));
+
+        ret = tex2D(sampler_rand00, uv-.05*norm.xy/norm.z);
+
+    }
+'''
+
