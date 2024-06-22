@@ -29,20 +29,6 @@ wave_1_per_point='''
 warp_='''
     shader_body {
         ret = tex2D(sampler_fc_main, uv-float2(.001,0));
-        //float2 dr = float2(1-0.50, 1-0.750) - uv;
-        //float2 dg = float2(1-0.28, 1-0.375) - uv;
-        //float2 db = float2(1-0.72, 1-0.375) - uv;
-
-        //ret = 0;
-        //ret.x = tex2D(sampler_main, uv_orig/2+0.001*normalize(dr)).x;
-        //ret.y = tex2D(sampler_main, uv_orig/2+0.001*normalize(dg)).y;
-        //ret.z = tex2D(sampler_main, uv_orig/2+0.001*normalize(db)).z;
-
-        //if (length(dr) < 0.01) { ret.x = .5+.5*sin(time); }
-        //if (length(dg) < 0.01) { ret.y = .5+.5*sin(time*0.9); }
-        //if (length(db) < 0.01) { ret.z = .5+.5*sin(time*1.1); }
-
-        //ret = dr;
     }
 '''
 comp_='''
