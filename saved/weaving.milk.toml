@@ -98,6 +98,9 @@ wave_2_per_point='''
 warp_='''
     shader_body {
         ret = tex2D(sampler_pc_main, uv + float2(0.0005, 0));
+        if (progress < 0.01) {
+            ret = 0;
+        }
     }
 '''
 
@@ -123,7 +126,6 @@ comp_='''
             ret = mul(rot_d4, float3(0,0,.4));
         }
 
-        // ret = tex2D(sampler_rand0, mul(rot_d1,uv));
         //if (ret.y > 0) { ret.y = 1; }
         //if (ret.x > 0) { ret.x = 1; }
         //if (ret.z > 0) { ret.z = 1; }
