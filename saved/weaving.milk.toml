@@ -21,9 +21,9 @@ wavecode_0_bAdditive=1
 
 wave_0_per_point='''
     phase  = 3.1416*0;
+
     posx   = .5;
     posy   = .5 + .1*sin(time + phase);
-    posz   = .5 + .4*sin(time + phase);
 
     slopex = 1;
     slopey = -cos(time + phase);
@@ -48,24 +48,23 @@ wavecode_1_bAdditive=1
 
 wave_1_per_point='''
     phase  = 3.1416*0.66;
+
     posx   = .5;
-    posy   = .5 + .1*sin(time+phase);
-    posz   = .5 + .4*sin(time+phase);
+    posy   = .5 + .1*sin(time + phase);
 
     slopex = 1;
-    slopey = -cos(time+phase);
+    slopey = -cos(time + phase);
 
     posz = .01 + below(sin(2*(time + phase)), 0);
 
     edge = below(sample, 0.1) + above(sample, 0.9);
-
-    r = 0;
+    r = posz;
     g = 0;
-    b = posz;
+    b = 0;
     a = 1;
 
-    x = posx + (sample-.5)*.035*slopex;
-    y = posy + (sample-.5)*.035*slopey;
+    x = posx + (sample-.5)*.03*slopex;
+    y = posy + (sample-.5)*.03*slopey;
 '''
 
 wavecode_2_enabled=1
@@ -76,18 +75,18 @@ wavecode_2_bAdditive=1
 
 wave_2_per_point='''
     phase  = 3.1416*1.33;
+
     posx   = .5;
-    posy   = .5 + .1*sin(time+phase);
-    posz   = .5 + .4*sin(time+phase);
+    posy   = .5 + .1*sin(time + phase);
 
     slopex = 1;
-    slopey = -cos(time+phase);
+    slopey = -cos(time + phase);
 
     posz = .01 + below(sin(2*(time + phase)), 0);
 
     edge = below(sample, 0.1) + above(sample, 0.9);
-    r = 0;
-    g = posz;
+    r = posz;
+    g = 0;
     b = 0;
     a = 1;
 
