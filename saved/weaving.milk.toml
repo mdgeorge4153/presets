@@ -58,8 +58,8 @@ wave_1_per_point='''
     posz = .01 + below(sin(2*(time + phase)), 0);
 
     edge = below(sample, 0.1) + above(sample, 0.9);
-    r = posz;
-    g = 0;
+    r = 0;
+    g = posz;
     b = 0;
     a = 1;
 
@@ -85,9 +85,9 @@ wave_2_per_point='''
     posz = .01 + below(sin(2*(time + phase)), 0);
 
     edge = below(sample, 0.1) + above(sample, 0.9);
-    r = posz;
+    r = 0;
     g = 0;
-    b = 0;
+    b = posz;
     a = 1;
 
     x = posx + (sample-.5)*.03*slopex;
@@ -124,10 +124,6 @@ comp_='''
         else {
             ret = mul(rot_d4, float3(0,0,.4));
         }
-
-        //if (ret.y > 0) { ret.y = 1; }
-        //if (ret.x > 0) { ret.x = 1; }
-        //if (ret.z > 0) { ret.z = 1; }
     }
 '''
 
