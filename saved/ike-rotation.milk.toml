@@ -1,0 +1,45 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fDecay=1
+fGammaAdj=1.980
+warp=0
+zoom=1
+
+# disable built-in wave
+wave_a=0
+
+wavecode_0_enabled=0
+wavecode_0_samples=100
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+
+wave_0_per_point='''
+'''
+
+warp_='''
+'''
+
+comp_='''
+shader_body{
+	// distance from (0,0) to (u,v)
+	float r=sqrt((uv.x*uv.x)+(uv.y*uv.y));
+	
+	// angle to (u,v)
+	float a=acos(uv.x/r);
+	
+	// angle to (u',v')
+	float t=a+time;
+	
+	float u=sin(t)*r;
+	float v=cos(t)*r;
+	
+	ret=tex2D(sampler_rand0,float2(u,v));
+}
+'''
+
