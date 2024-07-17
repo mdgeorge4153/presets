@@ -1,3 +1,5 @@
 generated/*
 examples/*.milk.toml
 presets
+device.txt
+*.zip
