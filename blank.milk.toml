@@ -24,34 +24,13 @@ wave_0_per_point='''
 
 warp_='''
     shader_body {
-        ret = tex2D(sampler_pc_main, uv + float2(0.0005, 0));
-        if (progress < 0.01) {
-            ret = 0;
-        }
+        ret = 0;
     }
 '''
 
 comp_='''
     shader_body {
         ret = tex2D(sampler_main, uv);
-        if (ret.x >= ret.y && ret.x >= ret.z && ret.x > 0.005) {
-            ret.y = 0;
-            ret.z = 0;
-            ret = tex2D(sampler_rand0, mul(rot_d1, uv));
-        }
-        else if (ret.y >= ret.x && ret.y >= ret.z && ret.y > 0.005) {
-            ret.x = 0;
-            ret.z = 0;
-            ret = tex2D(sampler_rand1, mul(rot_d2, uv));
-        }
-        else if (ret.z >= ret.x && ret.z >= ret.y && ret.z > 0.005) {
-            ret.x = 0;
-            ret.y = 0;
-            ret = tex2D(sampler_rand2, mul(rot_d3, uv));
-        }
-        else {
-            ret = mul(rot_d4, float3(0,0,.4));
-        }
     }
 '''
 

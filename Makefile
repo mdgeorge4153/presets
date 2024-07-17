@@ -1,5 +1,5 @@
 
-MILKS=$(patsubst %.milk.toml,generated/%.milk, $(wildcard *.milk.toml) $(wildcard saved/*.milk.toml))
+MILKS=$(patsubst %.milk.toml,generated/%.milk, $(wildcard *.milk.toml) $(wildcard saved/*.milk.toml) $(wildcard examples/*.milk.toml))
 TOMLS=$(patsubst %.milk,%.milk.toml, $(wildcard examples/*.milk))
 
 all: $(MILKS) $(TOMLS)
