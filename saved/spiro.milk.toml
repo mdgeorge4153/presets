@@ -1,0 +1,47 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fDecay=1
+fGammaAdj=1.980
+warp=0
+zoom=1.01
+
+# disable built-in wave
+wave_a=0
+
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+
+wave_0_per_point='''
+    factor = .3+.15*bass_att;
+    theta = sample*3.141592*2;
+    x = .4*cos(theta*14) + factor*cos(theta*37+time);
+    y = .4*sin(theta*14) + factor*sin(theta*37+time);
+
+    x = .5 + x/aspecty/(.2+factor)*.4;
+    y = .5 + y/aspectx/(.2+factor)*.4;
+
+    r=.1 + bass_att*.3;
+    g=.1 + mid_att*.3;
+    b=.1 + treb_att*.3;
+'''
+
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_main,uv)*.97;
+    }
+'''
+
+comp_='''
+    shader_body {
+        ret = tex2D(sampler_main, uv);
+    }
+'''
+
