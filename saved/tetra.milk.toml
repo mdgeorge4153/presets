@@ -1,0 +1,132 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+
+[preset00]
+fShader=0.0
+fDecay=1
+fGammaAdj=1.980
+warp=0
+zoom=1
+
+# disable built-in wave
+wave_a=0
+
+wavecode_0_enabled=0
+wavecode_0_samples=100
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+
+wave_0_per_point='''
+'''
+
+warp_='''
+    shader_body {
+        ret = 0;
+    }
+'''
+
+comp_='''
+    // adapted from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection.html
+    // returns (u',v',t,f) where (u,v) are the barycentric coordinates,
+    // t is the depth,
+    // and f is either
+    //   < 0 (back intersection),
+    //   = 0 (no intersection), or
+    //   > 0 (front intersection)
+    float4 intersection(float2 o, float3 v0, float3 v1, float3 v2) {
+        float3 orig = float3(o.x, o.y, 3);
+        float3 dir  = float3(0,0,1);
+
+        float3 v0v1 = v1 - v0;
+        float3 v0v2 = v2 - v0;
+        float3 tvec = orig - v0;
+
+        float3 pvec = cross(dir, v0v2);
+        float  det  = dot(v0v1, pvec);
+
+        if (abs(det) < 0.0001) {
+            return float4(0,0,0,0);
+        }
+
+        float  invDet = 1/det;
+
+        float u = dot(tvec, pvec)*invDet;
+
+        float3 qvec   = cross(tvec, v0v1);
+        float v = dot(dir, qvec) * invDet;
+        float t = dot(v0v2, qvec)*invDet;
+        float w = 1 - u - v;
+
+        return float4(u, v, t, det);
+    }
+
+    shader_body {
+        float f = 1.618; // golden ratio
+        float g = 0.618; // 1/f, or f - 1
+
+        float4 corners[20] =
+            { float4(+1,+1,+1,1) // tetrahedron 1
+            , float4(+1,-1,-1,1)
+            , float4(-1,+1,-1,1)
+            , float4(-1,-1,+1,1)
+
+            , float4(-1,-1,-1,1) // tetrahedron 2
+            , float4( 0,+f,-g,1)
+            , float4(-g, 0,+f,1)
+            , float4(+f,-g, 0,1)
+
+            , float4(-1,+1,+1,1) // tetrahedron 3
+            , float4( 0,-f,+g,1)
+            , float4(-g, 0,-f,1)
+            , float4(+f,+g, 0,1)
+
+            , float4(+1,-1,+1,1) // tetrahedron 4
+            , float4( 0,+f,+g,1)
+            , float4(+g, 0,-f,1)
+            , float4(-f,-g, 0,1)
+
+            , float4(+1,+1,-1,1) // tetrahedron 5
+            , float4( 0,-f,-g,1)
+            , float4(+g, 0,+f,1)
+            , float4(-f,+g, 0,1)
+        };
+
+        float2 uv2 = (uv - float2(.5,.5))*aspect.wz*4; // normalized into [-1,1]
+
+        float depth = 10;
+
+        for (int tet = 0; tet < 5; tet++) {
+            for (int face = 0; face < 4; face++) {
+                float4 v0 = corners[(4*tet) + ((face + 0)%4)];
+                float4 v1 = corners[(4*tet) + ((face + 1)%4)];
+                float4 v2 = corners[(4*tet) + ((face + 2)%4)];
+                float4 v3 = corners[(4*tet) + ((face + 3)%4)];
+                float4 i = intersection(uv2,
+                    mul(v0, rot_f1),
+                    mul(v1, rot_f1),
+                    mul(v2, rot_f1)
+                );
+
+                float3 bary = float3(i.xy, 1 - i.x - i.y);
+                if (bary.x < 0 || bary.x > 1 || bary.y < 0 || bary.y > 1 || bary.z < 0 || bary.z > 1) {
+                    continue;
+                }
+                else if (bary.x > .08 && bary.y > .08 && bary.z > .08) {
+                    continue;
+                }
+                else {
+                    if (i.z > depth) {
+                        continue;
+                    }
+                    depth = i.z;
+
+                    ret = v3.xyz/4 + 0.5*bary;
+                }
+            }
+        }
+    }
+'''
+
