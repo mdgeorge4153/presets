@@ -10,7 +10,7 @@ warp=0
 zoom=1.0001
 
 # disable built-in wave
-wave_a=0
+fWaveAlpha=0
 
 # custom wave
 wavecode_1_enabled=1
@@ -27,9 +27,14 @@ wave_1_per_point='''
     b=treb_att;
 '''
 
+warp_='''
+    shader_body {
+        ret = tex2D(sampler_main, uv);
+    }
+'''
+
 comp_='''
-//    shader_body
-//    {
-//       ret = tex2D(sampler_main, uv) + .01;
-//    }
+    shader_body {
+        ret = tex2D(sampler_main, uv);
+    }
 '''
