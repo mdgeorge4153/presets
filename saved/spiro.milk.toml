@@ -19,14 +19,19 @@ wavecode_0_bUseDots=0
 wavecode_0_bDrawThick=1
 wavecode_0_bAdditive=1
 
+per_frame_='''
+    q1 = aspectx;
+    q2 = aspecty;
+'''
+
 wave_0_per_point='''
     factor = .3+.15*bass_att;
     theta = sample*3.141592*2;
     x = .4*cos(theta*14) + factor*cos(theta*37+time);
     y = .4*sin(theta*14) + factor*sin(theta*37+time);
 
-    x = .5 + x/aspecty/(.2+factor)*.4;
-    y = .5 + y/aspectx/(.2+factor)*.4;
+    x = .5 + x/(.2+factor)*.2;
+    y = .5 + y/(.2+factor)*.2;
 
     r=.1 + bass_att*.3;
     g=.1 + mid_att*.3;
