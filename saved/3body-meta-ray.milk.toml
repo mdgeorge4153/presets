@@ -24,11 +24,11 @@ per_frame_init_='''
     vx1 = .25 - rand(10)/20;
     vy1 = .25 - rand(10)/20;
 
-    # average of positions should be at (.5, .5)
+    // average of positions should be at (.5, .5)
     x2 = 1.5 - x0 - x1;
     y2 = 1.5 - y0 - y1;
 
-    # average of velocities should be 0
+    // average of velocities should be 0
     vx2 = -vx0 - vx1;
     vy2 = -vy0 - vy1;
 '''
@@ -79,6 +79,8 @@ warp_='''
 '''
 
 comp_='''
+    sampler sampler_rand00;
+
     shader_body {
         float cutoff = 100;
 
