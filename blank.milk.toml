@@ -12,6 +12,7 @@ zoom=1
 
 # disable built-in wave
 wave_a=0
+fWaveAlpha=0
 
 wavecode_0_enabled=0
 wavecode_0_samples=100
