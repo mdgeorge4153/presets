@@ -1,7 +1,7 @@
 MILKDROP_PRESET_VERSION=201
-PSVERSION=2
-PSVERSION_WARP=2
-PSVERSION_COMP=2
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
 
 [preset00]
 fShader=0.0
@@ -46,21 +46,22 @@ comp_='''
 
         float3 pvec = cross(dir, v0v2);
         float  det  = dot(v0v1, pvec);
-
         if (abs(det) < 0.0001) {
             return float4(0,0,0,0);
         }
+        else {
 
-        float  invDet = 1/det;
+            float  invDet = 1/det;
 
-        float u = dot(tvec, pvec)*invDet;
+            float u = dot(tvec, pvec)*invDet;
 
-        float3 qvec   = cross(tvec, v0v1);
-        float v = dot(dir, qvec) * invDet;
-        float t = dot(v0v2, qvec)*invDet;
-        float w = 1 - u - v;
+            float3 qvec   = cross(tvec, v0v1);
+            float v = dot(dir, qvec) * invDet;
+            float t = dot(v0v2, qvec)*invDet;
+            float w = 1 - u - v;
 
-        return float4(u, v, t, det);
+            return float4(u, v, t, det);
+        }
     }
 
     shader_body {
@@ -98,7 +99,7 @@ comp_='''
 
         float depth = 10;
 
-        ret = 1;
+        ret = float3(0.9,0.95,1);
         for (int tet = 0; tet < 5; tet++) {
             for (int face = 0; face < 4; face++) {
                 float4 v0 = corners[(4*tet) + ((face + 0)%4)];
@@ -113,15 +114,15 @@ comp_='''
 
                 float3 bary = float3(i.xy, 1 - i.x - i.y);
                 if (bary.x < 0 || bary.x > 1 || bary.y < 0 || bary.y > 1 || bary.z < 0 || bary.z > 1) {
-                    continue;
+
                 }
                 else if (bary.x > .08 && bary.y > .08 && bary.z > .08) {
-                    continue;
+
+                }
+                else if (i.z > depth) {
+
                 }
                 else {
-                    if (i.z > depth) {
-                        continue;
-                    }
                     depth = i.z;
 
                     ret = v3.xyz/4 + 0.5*bary;
