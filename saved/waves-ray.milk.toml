@@ -9,9 +9,10 @@ fDecay=1.0
 fGammaAdj=1.980
 warp=0
 zoom=1.00
+dx=0.002
 
 # disable built-in wave
-wave_a=0
+fWaveAlpha=0
 
 wavecode_1_enabled=1
 wavecode_1_samples=2
@@ -25,16 +26,17 @@ wave_1_per_frame='''
 '''
 
 wave_1_per_point='''
-    x=0;
+    x=0.001;
     y=sample;
 '''
 
 warp_='''
     shader_body {
-        ret = tex2D(sampler_fc_main, uv-float2(.001,0));
+        ret = tex2D(sampler_fc_main, uv);
     }
 '''
 comp_='''
+    sampler sampler_rand00;
     shader_body {
         float2 d_r = 0.5*(float2(0.5, 0.8)*aspect - uv*aspect);
         float2 d_g = 0.5*(float2(0.5, 0.5)*aspect - uv*aspect);
