@@ -38,34 +38,37 @@ wave_1_per_frame='''
     ball_vy = ball_vy - .9*dt; // gravity
 
     // collision with left side
-    left = below(ball_x, 0)*below(ball_vx,0);
-    ball_x  = left*(-ball_x)  + (1-left)*ball_x;
-    ball_vx = left*(-ball_vx) + (1-left)*ball_vx;
+    is_left = below(ball_x, 0)*below(ball_vx,0);
+    ball_x  = is_left*(-ball_x)  + (1-is_left)*ball_x;
+    ball_vx = is_left*(-ball_vx) + (1-is_left)*ball_vx;
 
     // collision with right side
-    right = above(ball_x, 1)*above(ball_vx,0);
-    ball_x  = right*(2 - ball_x) + (1-right)*ball_x;
-    ball_vx = right*(-ball_vx)   + (1-right)*ball_vx;
+    is_right = above(ball_x, 1)*above(ball_vx,0);
+    ball_x  = is_right*(2 - ball_x) + (1-is_right)*ball_x;
+    ball_vx = is_right*(-ball_vx)   + (1-is_right)*ball_vx;
 
     // collision with floor
-    below = below(ball_y, 0)*below(ball_vy,0);
-    ball_y  = below*(-ball_y) + (1-below)*ball_y;
-    ball_vy = below*(-ball_vy) + (1-below)*ball_vy;
+    is_below = below(ball_y, 0)*below(ball_vy,0);
+    ball_y  = is_below*(-ball_y) + (1-is_below)*ball_y;
+    ball_vy = is_below*(-ball_vy) + (1-is_below)*ball_vy;
 
     // collision with top
-    above = above(ball_y, 1)*above(ball_vy,0);
-    ball_y  = above*(2 - ball_y)  + (1-above)*ball_y;
-    ball_vy = above*(-.1*ball_vy) + (1-above)*ball_vy;
+    is_above = above(ball_y, 1)*above(ball_vy,0);
+    ball_y  = is_above*(2 - ball_y)  + (1-is_above)*ball_y;
+    ball_vy = is_above*(-.1*ball_vy) + (1-is_above)*ball_vy;
 
     // set up for wave processing
     last_x=0;
     last_y=0;
+
+    q1 = aspectx;
+    q2 = aspecty;
 '''
 
 wave_1_per_point='''
-    ang = rand(100);
-    bx = ball_x + .020*sin(ang)*aspectx;
-    by = ball_y + .020*cos(ang)*aspecty;
+    theta = rand(100);
+    bx = ball_x + .020*sin(theta)*q1;
+    by = ball_y + .020*cos(theta)*q2;
 
     // draw wave
     wx = sample/.9;
@@ -80,16 +83,17 @@ wave_1_per_point='''
     norm_x = -norm_x/len_norm;
     norm_y = norm_y/len_norm;
 
-    below = has_ball*below(ball_y, wy);
-    ball_y  = (1-below)*ball_y  + below*(wy + (wy - ball_y);
-    ball_vy = (1-below)*ball_vy + below*(wy*5);
-    ball_vx = (1-below)*ball_vx + below*(.5*norm_x);
+    is_below = has_ball*below(ball_y, wy);
+    ball_y  = (1-is_below)*ball_y  + is_below*(wy + (wy - ball_y));
+    ball_vy = (1-is_below)*ball_vy + is_below*(wy*5);
+    ball_vx = (1-is_below)*ball_vx + is_below*(.5*norm_x);
 
     // drawing
 
     is_ball = above(sample, .9);
     x = is_ball*bx + (1-is_ball)*wx;
     y = is_ball*by + (1-is_ball)*wy;
+    monitor = is_ball;
 
     r = below(wx, ball_x-.01) + above(wx, ball_x+.01);
 
@@ -97,7 +101,7 @@ wave_1_per_point='''
     last_y = wy;
 '''
 
-wavecode_2_enabled=1
+wavecode_2_enabled=0
 wavecode_2_samples=500
 wavecode_2_bSpectrum=0
 wavecode_2_bUseDots=0
