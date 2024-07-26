@@ -11,30 +11,53 @@ warp=0
 zoom=1
 
 # disable built-in wave
-wave_a=0
+fWaveAlpha=0
+
+per_frame_='''
+    phase1 = time + 3.14159*0;
+    phase3 = time + 3.14159*.66;
+    phase2 = time + 3.14159*1.33;
+
+    // the y values of the 3 strands
+    q1 = .5 + .1*sin(phase1);
+    q2 = .5 + .1*sin(phase2);
+    q3 = .5 + .1*sin(phase3);
+
+    // the slopes of the 3 strands
+    q4 = -cos(phase1);
+    q5 = -cos(phase2);
+    q6 = -cos(phase3);
+
+    // there are 6 possible orderings between the 3 strands:
+    //   123 => 132 => 312 => 321 => 231 => 213 => repeat
+    // the `q8` variable indicates which region we're in:
+    //    0  =>  1  =>  2  =>  3  =>  4  =>  5  => repeat
+
+    q8 = (6*time/3.14159)%6;
+'''
 
 wavecode_0_enabled=1
 wavecode_0_samples=100
-wavecode_0_bUseDots=1
+wavecode_0_bUseDots=0
 wavecode_0_bDrawThick=1
 wavecode_0_bAdditive=1
 
 wave_0_per_point='''
-    phase  = 3.1416*0;
+    // 1st strand (see per frame code)
+    is1 = equal(q8, 0) | equal(q8, 1);
+    is2 = equal(q8, 4) | equal(q8, 5);
+    is3 = equal(q8, 2) | equal(q8, 3);
 
-    posx   = .5;
-    posy   = .5 + .1*sin(time + phase);
+    posx = .5;
+    posy = is1*q1 + is2*q2 + is3*q3;
 
     slopex = 1;
-    slopey = -cos(time + phase);
+    slopey = is1*q4 + is2*q5 + is3*q6;
 
-    posz = .01 + below(sin(2*(time + phase)), 0);
-
-    edge = below(sample, 0.1) + above(sample, 0.9);
-    r = posz;
-    g = 0;
-    b = 0;
-    a = 1;
+    r = is1;
+    g = is2;
+    b = is3;
+    a = .25;
 
     x = posx + (sample-.5)*.03*slopex;
     y = posy + (sample-.5)*.03*slopey;
@@ -47,21 +70,21 @@ wavecode_1_bDrawThick=1
 wavecode_1_bAdditive=1
 
 wave_1_per_point='''
-    phase  = 3.1416*0.66;
+    // 2nd strand (see per frame code)
+    is1 = equal(q8, 2) | equal(q8, 5);
+    is2 = equal(q8, 0) | equal(q8, 3);
+    is3 = equal(q8, 1) | equal(q8, 4);
 
-    posx   = .5;
-    posy   = .5 + .1*sin(time + phase);
+    posx = .5;
+    posy = is1*q1 + is2*q2 + is3*q3;
 
     slopex = 1;
-    slopey = -cos(time + phase);
+    slopey = is1*q4 + is2*q5 + is3*q6;
 
-    posz = .01 + below(sin(2*(time + phase)), 0);
-
-    edge = below(sample, 0.1) + above(sample, 0.9);
-    r = 0;
-    g = posz;
-    b = 0;
-    a = 1;
+    r = is1;
+    g = is2;
+    b = is3;
+    a = .5;
 
     x = posx + (sample-.5)*.03*slopex;
     y = posy + (sample-.5)*.03*slopey;
@@ -74,21 +97,21 @@ wavecode_2_bDrawThick=1
 wavecode_2_bAdditive=1
 
 wave_2_per_point='''
-    phase  = 3.1416*1.33;
+    // 3rd strand (see per frame code)
+    is1 = equal(q8, 3) | equal(q8, 4);
+    is2 = equal(q8, 1) | equal(q8, 2);
+    is3 = equal(q8, 0) | equal(q8, 5);
 
-    posx   = .5;
-    posy   = .5 + .1*sin(time + phase);
+    posx = .5;
+    posy = is1*q1 + is2*q2 + is3*q3;
 
     slopex = 1;
-    slopey = -cos(time + phase);
+    slopey = is1*q4 + is2*q5 + is3*q6;
 
-    posz = .01 + below(sin(2*(time + phase)), 0);
-
-    edge = below(sample, 0.1) + above(sample, 0.9);
-    r = 0;
-    g = 0;
-    b = posz;
-    a = 1;
+    r = is1;
+    g = is2;
+    b = is3;
+    a = .75;
 
     x = posx + (sample-.5)*.03*slopex;
     y = posy + (sample-.5)*.03*slopey;
@@ -97,9 +120,6 @@ wave_2_per_point='''
 warp_='''
     shader_body {
         ret = tex2D(sampler_pc_main, uv + float2(0.0005, 0));
-        if (progress < 0.01) {
-            ret = 0;
-        }
     }
 '''
 
