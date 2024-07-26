@@ -26,9 +26,9 @@ per_frame_='''
     q3 = .5 + .1*sin(phase3);
 
     // the slopes of the 3 strands
-    q4 = -cos(phase1);
-    q5 = -cos(phase2);
-    q6 = -cos(phase3);
+    q4 = -cos(.5*phase1);
+    q5 = -cos(.5*phase2);
+    q6 = -cos(.5*phase3);
 
     // there are 6 possible orderings between the 3 strands:
     //   123 => 132 => 312 => 321 => 231 => 213 => repeat
@@ -39,8 +39,8 @@ per_frame_='''
 '''
 
 wavecode_0_enabled=1
-wavecode_0_instances=500
-wavecode_0_bUseDots=0
+wavecode_0_samples=500
+wavecode_0_bUseDots=1
 wavecode_0_bDrawThick=1
 wavecode_0_bAdditive=1
 
@@ -66,8 +66,8 @@ wave_0_per_point='''
 '''
 
 wavecode_1_enabled=1
-wavecode_1_samples=2
-wavecode_1_bUseDots=0
+wavecode_1_samples=500
+wavecode_1_bUseDots=1
 wavecode_1_bDrawThick=1
 wavecode_1_bAdditive=1
 
@@ -93,8 +93,8 @@ wave_1_per_point='''
 '''
 
 wavecode_2_enabled=1
-wavecode_2_samples=2
-wavecode_2_bUseDots=0
+wavecode_2_samples=500
+wavecode_2_bUseDots=1
 wavecode_2_bDrawThick=1
 wavecode_2_bAdditive=1
 
