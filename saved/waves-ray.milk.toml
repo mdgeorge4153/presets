@@ -14,19 +14,24 @@ dx=0.002
 # disable built-in wave
 fWaveAlpha=0
 
-wavecode_1_enabled=1
-wavecode_1_samples=2
-wavecode_1_bDrawThick=1
-wavecode_1_alpha=1
+per_frame='''
+    monitor=bass_att;
+'''
 
-wave_1_per_frame='''
+wavecode_0_enabled=1
+wavecode_0_samples=2
+wavecode_0_bDrawThick=1
+wavecode_0_alpha=1
+
+wave_0_per_frame='''
     r = 0.5*bass_att;
     g = 0.5*mid_att;
     b = 0.5*treb_att;
+    monitor=bass;
 '''
 
-wave_1_per_point='''
-    x=0.001;
+wave_0_per_point='''
+    x=0.1;
     y=sample;
 '''
 
@@ -42,9 +47,9 @@ comp_='''
         float2 d_g = 0.5*(float2(0.5, 0.5)*aspect - uv*aspect);
         float2 d_b = 0.5*(float2(0.5, 0.2)*aspect - uv*aspect);
 
-        float dist_r = length(d_r);
-        float dist_g = length(d_g);
-        float dist_b = length(d_b);
+        float dist_r = length(d_r)+0.08;
+        float dist_g = length(d_g)+0.08;
+        float dist_b = length(d_b)+0.08;
 
         float delta_r = (tex2D(sampler_fc_main, dist_r).x - tex2D(sampler_fc_main, dist_r-0.001).x)/(dist_r+.001)*0.1;
         float delta_g = (tex2D(sampler_fc_main, dist_g).y - tex2D(sampler_fc_main, dist_g-0.001).y)/(dist_g+.001)*0.1;
@@ -60,6 +65,7 @@ comp_='''
         ));
 
         ret = tex2D(sampler_rand00, uv-.05*norm.xy/norm.z);
+        //ret = tex2D(sampler_main, uv);
 
     }
 '''
