@@ -17,91 +17,92 @@ wavecode_1_enabled=1
 wavecode_1_samples=500
 wavecode_1_bSpectrum=0
 wavecode_1_bUseDots=1
-wavecode_1_bDrawThick=1
+wavecode_1_bDrawThick=0
 wavecode_1_smoothing=0.5
 
 wave_1_init='''
-    ball_x = .5;
-    ball_y = .8;
+    reg00 = .5;
+    reg01 = .8;
 
-    ball_vx = .15;
-    ball_vy = 0;
+    reg02 = .15;
+    reg03 = 0;
 '''
 
-wave_1_per_frame='''
+per_frame_='''
     dt = 1/fps;
 
     // motion
-    ball_x = ball_x + ball_vx*dt;
-    ball_y = ball_y + ball_vy*dt;
+    reg00 = reg00 + reg02*dt;
+    reg01 = reg01 + reg03*dt;
 
-    ball_vy = ball_vy - .9*dt; // gravity
+    reg03 = reg03 - .9*dt; // gravity
 
     // collision with left side
-    is_left = below(ball_x, 0)*below(ball_vx,0);
-    ball_x  = is_left*(-ball_x)  + (1-is_left)*ball_x;
-    ball_vx = is_left*(-ball_vx) + (1-is_left)*ball_vx;
+    is_left = below(reg00, 0)*below(reg02,0);
+    reg00  = is_left*(-reg00)  + (1-is_left)*reg00;
+    reg02 = is_left*(-reg02) + (1-is_left)*reg02;
 
     // collision with right side
-    is_right = above(ball_x, 1)*above(ball_vx,0);
-    ball_x  = is_right*(2 - ball_x) + (1-is_right)*ball_x;
-    ball_vx = is_right*(-ball_vx)   + (1-is_right)*ball_vx;
+    is_right = above(reg00, 1)*above(reg02,0);
+    reg00  = is_right*(2 - reg00) + (1-is_right)*reg00;
+    reg02 = is_right*(-reg02)   + (1-is_right)*reg02;
 
     // collision with floor
-    is_below = below(ball_y, 0)*below(ball_vy,0);
-    ball_y  = is_below*(-ball_y) + (1-is_below)*ball_y;
-    ball_vy = is_below*(-ball_vy) + (1-is_below)*ball_vy;
+    is_below = below(reg01, 0)*below(reg03,0);
+    reg01  = is_below*(-reg01) + (1-is_below)*reg01;
+    reg03 = is_below*(-reg03) + (1-is_below)*reg03;
 
     // collision with top
-    is_above = above(ball_y, 1)*above(ball_vy,0);
-    ball_y  = is_above*(2 - ball_y)  + (1-is_above)*ball_y;
-    ball_vy = is_above*(-.1*ball_vy) + (1-is_above)*ball_vy;
+    is_above = above(reg01, 1)*above(reg03,0);
+    reg01  = is_above*(2 - reg01)  + (1-is_above)*reg01;
+    reg03 = is_above*(-.1*reg03) + (1-is_above)*reg03;
 
     // set up for wave processing
-    last_x=0;
-    last_y=0;
+    reg04=0;
+    reg05=0;
 
     q1 = aspectx;
     q2 = aspecty;
+    monitor = q2;
 '''
 
 wave_1_per_point='''
     theta = rand(100);
-    bx = ball_x + .020*sin(theta)*q1;
-    by = ball_y + .020*cos(theta)*q2;
+    bx = reg00+.001*rand(10)*cos(theta)/q2;
+    by = reg01+.001*rand(10)*sin(theta)/q1;
 
     // draw wave
     wx = sample/.9;
-    wy = value1*.15 + .2;
+    wy = value1*.25 + .2;
 
     // collision detection and handling
-    has_ball = below(last_x, ball_x)*(1-below(wx, ball_x))*(1-is_ball);
+    has_ball = below(reg04, reg00)*(1-below(wx, reg00))*(1-is_ball);
 
-    norm_x = wy - last_y;
-    norm_y = last_x - wx;
+    norm_x = wy - reg05;
+    norm_y = reg04 - wx;
     len_norm = sqrt(norm_x*norm_x + norm_y*norm_y);
     norm_x = -norm_x/len_norm;
     norm_y = norm_y/len_norm;
 
-    is_below = has_ball*below(ball_y, wy);
-    ball_y  = (1-is_below)*ball_y  + is_below*(wy + (wy - ball_y));
-    ball_vy = (1-is_below)*ball_vy + is_below*(wy*5);
-    ball_vx = (1-is_below)*ball_vx + is_below*(.5*norm_x);
+    is_below = has_ball*below(reg01, wy);
+    reg01  = (1-is_below)*reg01  + is_below*(wy + (wy - reg01));
+    reg03 = (1-is_below)*reg03 + is_below*(wy*5);
+    reg02 = (1-is_below)*reg02 + is_below*(.5*norm_x);
 
     // drawing
 
     is_ball = above(sample, .9);
     x = is_ball*bx + (1-is_ball)*wx;
     y = is_ball*by + (1-is_ball)*wy;
+    y = .5 - (.5 - y)/q2;
     monitor = is_ball;
 
-    r = below(wx, ball_x-.01) + above(wx, ball_x+.01);
 
-    last_x = wx;
-    last_y = wy;
+    reg04 = wx;
+    reg05 = wy;
 '''
 
-wavecode_2_enabled=0
+wavecode_2_enabled=1
 wavecode_2_samples=500
 wavecode_2_bSpectrum=0
 wavecode_2_bUseDots=0
@@ -110,8 +111,8 @@ wavecode_2_smoothing=0.5
 
 wave_2_per_point='''
     x=sample/.9;
-    y=value1*.15 + .2;
-    r=below(x, ball_x-.01) + above(x, ball_x+.01);
+    y=value1*.25 + .2;
+    y = .5 - (.5 - y)/q2;
 '''
 
 
